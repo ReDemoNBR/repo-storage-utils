@@ -1,0 +1,1 @@
+apm install auto-indent autoclose-html autocomplete-modules git-plus git-time-machine language-gitignore merge-conflicts npm-plus platformio-ide-terminal atom-beautify file-icons linter color-picker atom-html-preview highlight-selected activate-power-mode seti-ui seti-syntax

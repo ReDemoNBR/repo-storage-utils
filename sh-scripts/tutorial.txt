@@ -1,0 +1,82 @@
+INSTALL
+*for windows
+use SDFormatter to quick format the SD card without size adjustment
+then use Win32DiskImager to write the img file to the SD
+
+
+AFTER INSTALL
+disable overscan to remove margins from monitor [if it has margins]
+# sudo nano /boot/config.txt
+add the following line:
+	disable_overscan=1
+if wants to have more video memory, add or change gpu_mem (value in MB)
+	gpu_mem=192
+
+resize SD card to max capacity possible:
+# sudo resize-sd
+
+
+CREATE NEW USER
+go to Manjaro Settings Manager and hit User Accounts
+and add a new user with administrator account type.
+
+then add new user to sudoers:
+# sudo visudo
+
+navigate with arrows and add the user below the root user
+to edit press 'insert', after it is inserted, press 'esc'
+to save and quit type ":wq" (write-quit) and hit 'enter'
+restart and login this user to startg configuring Manjaro
+
+APPEARENCE
+go to Appearence settings and select Vertex-Maia-Dark style theme
+and Vertex-Maia icon theme
+then go to Window Manager and select Vertex-Maia-Dark style theme.
+do the xfce4 changes as you like
+
+
+SWAPFILE CREATION
+set size... M for megabytes and G for gigabytes
+# sudo fallocate -l 2G /swapfile
+
+set correct permissions
+# sudo chmod 600 /swapfile
+
+format the swapfile
+# sudo mkswap /swapfile
+
+activate the swapfile
+# sudo swapon /swapfile
+
+open /etc/fstab
+# sudo nano /etc/fstab
+
+add this line to /etc/fstab
+/swapfile none swap defaults 0 0 
+
+then reboot
+
+
+
+
+ILOVECANDY - PACMAN
+# sudo nano /etc/pacman.conf
+add this line below "#VerbosePkgLists"
+	ILoveCandy
+
+
+
+
+- ttf-dejavu update/upgrade problem
+install it with force
+# sudo pacman -S --force ttf-dejavu
+
+
+- issues updating or with 'raspberry-firmware' or 'raspberry-firmware-tools'
+install both packages with force, and the others too
+# sudo pacman -S --force raspberry-firmware
+# sudo pacman -S --force raspberry-firmware-tools
+# sudo pacman -S --force raspberry-firmware-bootloader
+# sudo pacman -S --force raspberry-firmware-bootloader-x
+# sudo pacman -S --force raspberry-firmware-examples
+
