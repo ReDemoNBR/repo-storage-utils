@@ -1,0 +1,156 @@
+//tree-view is the navigation on the left
+.tree-view {
+  font-family: Arial, Helvetica, sans-serif;
+  //background-color: whitesmoke;
+  .file.entry.list-item {
+    border-radius: 5px;
+  }
+  .file.entry.list-item:hover {
+    background-color: #0F0;
+    color: #000;
+    cursor: pointer;
+  }
+  .file.entry.list-item.selected {
+    color: #0F0;
+    font-weight: bold;
+  }
+  .file.entry.list-item.status-modified {
+      color: #F60;
+  }
+  .directory.entry.list-nested-item.status-modified > .header.list-item {
+      color: #F60;
+  }
+  .file.entry.list-item.status-added {
+    color: #F4F;
+  }
+  .directory.entry.list-nested-item.status-added > .header.list-item {
+    color: #F4F;
+  }
+  .selected::before {
+    background-color: #4D525D;
+  }
+  .icon::before {
+    font-size: 16px;
+    height: 16px;
+    left: 0px;
+    opacity: 1;
+    position: relative;
+    top: 0px;
+    width: 16px;
+  }
+  .header::before {
+    font-size: 16px !important;
+    margin-right: 10px !important;
+    opacity: 1;
+  }
+}
+
+
+.tree-view::before {
+  background-color: #0F0;
+}
+
+
+//the tabs with the files open on top
+.tab-bar{
+  .tab::before {
+    background: #0F0;
+  }
+  .tab .title {
+    text-align: left;
+  }
+  .tab.active .title {
+    color: #0F0;
+    font-weight: bold;
+  }
+  .tab.active.modified:hover .title {
+    color: #F60;
+  }
+  .tab:hover  {
+    cursor: pointer;
+    .close-icon {
+      color: #0F0;
+    }
+    .close-icon:hover {
+      background-color: #0F0;
+      color: #000;
+      cursor: pointer;
+    }
+  }
+  .tab.modified:not(:hover) {
+    .title {
+      color: #F60;
+    }
+    .close-icon {
+      color: #F60;
+    }
+  }
+  .tab.modified:hover {
+    color: #F60;
+    cursor: pointer;
+    .close-icon {
+      background-color: #F60;
+      color: #000;
+    }
+    .close-icon:hover {
+      color: #0F0;
+      cursor: pointer;
+    }
+  }
+}
+
+
+//tooltips for tabs
+.tooltip.fade.bottom.in {
+  .tooltip-arrow {
+    border-bottom-color: #0F0;
+  }
+  .tooltip-inner {
+  background-color: #0F0;
+    color: #000;
+    font-weight: 500;
+  }
+}
+
+
+//editor
+atom-text-editor {
+  .gutter {
+    .line-numbers {
+      overflow: hidden;
+      .line-number {
+        color: #0F0;
+        .icon-right {
+          color: #0A0;
+          opacity: 1;
+        }
+        .icon-right:hover {
+          color: #0F0;
+          opacity: 1;
+        }
+      }
+      .line-number:hover{
+        opacity: 1;
+      }
+    }
+  }
+  .fold-marker::after{
+    color: #F60;
+    font-size: 20px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
+  .cursor {
+    border-color: #0F0;
+  }
+  .wrap-guide {
+    visibility:hidden;
+  }
+}
+
+
+//editor
+atom-text-editor {
+  background-color: #202329;
+  color: #0F0;
+}

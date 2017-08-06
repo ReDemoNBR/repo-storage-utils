@@ -1,0 +1,19 @@
+'atom-text-editor:not([mini])':
+    'ctrl-delete': 'editor:delete-to-end-of-subword'
+    'ctrl-backspace': 'editor:delete-to-start-of-subword'
+    'alt-delete': 'editor:delete-to-end-of-word'
+    'alt-backspace': 'editr:delete-to-start-of-word'
+    'shift-delete': 'editor:delete-line'
+
+
+'atom-workspace atom-text-editor:not([mini])':
+    'alt-shift-down': 'editor:move-line-down'
+    'alt-shift-up': 'editor:move-line-up'
+    'ctrl-down': 'editor:add-selection-below'
+    'ctrl-up': 'editor:add-selection-above'
+
+
+
+'atom-text-editor':
+    'ctrl-/': 'custom:line-comment-toggle'
+ # 'ctrl-alt-l': 'atom-beautify:beautify-editor'
