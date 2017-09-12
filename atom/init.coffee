@@ -11,6 +11,14 @@
 #     console.log "Saved! #{editor.getPath()}"
 
 atom.commands.add 'atom-text-editor', 'custom:line-comment-toggle', ->
-  editor = atom.workspace.getActiveTextEditor()
-  editor.toggleLineCommentsInSelection()
-  editor.moveDown()
+    editor = atom.workspace.getActiveTextEditor()
+    editor.toggleLineCommentsInSelection()
+    editor.moveDown()
+
+
+atom.commands.add 'atom-text-editor', 'custom:selection-comment-toggle', ->
+    editor = atom.workspace.getActiveTextEditor()
+    text = editor.getSelectedText()
+    if text.length == 0
+        return
+    else editor.insertText("/*#{text}*/")
