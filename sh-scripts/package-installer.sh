@@ -7,9 +7,10 @@ while [ $# -gt 0 ] ; do
 		-X) X=true ; shift ;;
 		--install) I=true ; shift ;;
 		--export) X=true ; shift ;;
-		--*) echo "bad option '$1'" ; exit 1 ;;
+		# --*) echo "bad option '$1'" ; exit 1 ;;
 		--) shift ;;
 		-*) echo "bad option '$1'" ; exit 1 ;;
+		*) file=("${files[@]}" "$1") ; shift ;;
 	esac
 done
 
