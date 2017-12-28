@@ -19,3 +19,6 @@
     'ctrl-/': 'custom:line-comment-toggle'
     'ctrl-ç': 'custom:selection-comment-toggle'
  # 'ctrl-alt-l': 'atom-beautify:beautify-editor'
+
+'application':
+     'ctrl-q': ''

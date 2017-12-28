@@ -1,23 +1,46 @@
 #!/bin/bash
 
 
+
 # Make your changes here
 username="myuser"
 userpasswd="mypassword"
 rootpasswd="rootpasswd"
 hostname="myhostname"
-swapfilesize="2G"
-tmpsize="1G"
-keyboard="/usr/share/kbd/keymaps/i386/qwerty/br-abnt2.map.gz"
+swapfilesize="2G" ## let empty for no swapfile creation
+tmpsize="1G" ## let empty for no resize of /tmp
+keyboard="/usr/share/kbd/keymaps/i386/qwerty/br-abnt2.map.gz" ## let empty for standard english keyboard
 mainlang="en_US.UTF-8 UTF-8"
 secondarylangs=("en_US ISO-8859-1" "pt_BR.UTF-8 UTF-8" "pt_BR ISO-8859-1" "en_GB.UTF-8 UTF-8" "en_GB ISO-8859-1")
 timezone="/usr/share/zoneinfo/America/Sao_Paulo"
 
 
-if [[ whoami != "root" ]]; then
+
+if [[ $EUID -ne 0 ]]; then
     echo "must run as root"
+    echo
     exit 1
 fi
+
+
+## change password function to reuse
+change_passwd {
+	user=$1
+	password=$2
+	echo -e "$password\n$password" | passwd "$user"
+}
+
+## build function to reuse
+build_and_install {
+	as_user=$1
+	package=$2
+	su -l "$as_user" --command "mkdir -p /tmp/build"
+	su -l "$as_user" --command "cd /tmp/build ; git clone https://aur.archlinux.org/${package}.git $package ; cd $package ; makepkg"
+	cd "/tmp/build/${package}"
+	pacman -U --noconfirm "${package}*.pkg.tar.xz"
+	cd -
+	rm -fr /tmp/build
+}
 
 # AS ROOT
 
@@ -32,7 +55,7 @@ pacman -S --needed --noconfirm ca-certificates ca-certificates-utils ca-certific
 ## Update all packages
 pacman -Syu --noconfirm
 ## Install basic packages
-pacman -S --noconfirm base base-devel yajl wget git tk vi vim bash-completion
+pacman -S --needed --noconfirm base base-devel yajl wget git tk vi vim bash-completion
 ## Install raspberry-pi required packages (if not already installed
 pacman -S --needed --noconfirm raspberrypi-firmware raspberrypi-bootloader raspberrypi-bootloader-x
 ## Install fake-hwclock as RPi doesn't have RTC
@@ -43,7 +66,9 @@ systemctl enable fake-hwclock.service
 ## Configuration
 
 ### Keyboard layout
-loadkeys $keyboard
+if [[ -n $keyboard ]]; then
+	loadkeys $keyboard
+fi
 
 
 ### Locale
@@ -55,36 +80,47 @@ done
 #### Then generate the locales
 locale-gen
 #### configure details in /etc/locale.conf or just add "LANG=en_US.UTF-8" without quotes
-echo "LANG=$(echo $mainlang | cut -d " " -f 1)" > /etc/locale.conf
+lang=$(echo $mainlang | cut -d " " -f 1)
+echo "LANG=$lang" > /etc/locale.conf
+echo "LC_TELEPHONE=$lang" >> /etc/locale.conf
+echo "LC_PAPER=$lang" >> /etc/locale.conf
+echo "LC_NUMERIC=$lang" >> /etc/locale.conf
+echo "LC_MONETARY=$lang" >> /etc/locale.conf
+echo "LC_IDENTIFICATION=$lang" >> /etc/locale.conf
+echo "LC_MEASUREMENT=$lang" >> /etc/locale.conf
+echo "LC_ADDRESS=$lang" >> /etc/locale.conf
+echo "LC_NAME=$lang" >> /etc/locale.conf
+echo "LC_TIME=$lang" >> /etc/locale.conf
+
 
 
 ### Timezone
-#### List zoneinfo areas
-######### cd /usr/share/zoneinfo
-######### ls -d */ | grep --color=never ^[A-Z]
 ln -fs $timezone /etc/localtime
 
 
 ### Hostname
-#### Create hostname file (using the hostname as "pcname")
 echo $hostname > /etc/hostname
 echo "127.0.1.1 localhost.localdomain $hostname" >> /etc/hosts
 
 
 ### Create Swapfile (with 2GB in /swapfile)
-#### Allocate
-fallocate -l $swapfilesize /swapfile
-#### Adjust permissions
-chmod 600 /swapfile
-#### Create swapfile as swap type
-mkswap /swapfile
-#### Activate
-swapon /swapfile
-#### Add it to fstab so it is mounted on boot
-echo "/swapfile none swap defaults 0 0" | tee -a /etc/fstab
+if [[ -n $swapfilesize ]]; then
+	#### Allocate
+	fallocate -l $swapfilesize /swapfile
+	#### Adjust permissions
+	chmod 600 /swapfile
+	#### Create swapfile as swap type
+	mkswap /swapfile
+	#### Activate
+	swapon /swapfile
+	#### Add it to fstab so it is mounted on boot
+	echo "/swapfile none swap defaults 0 0" | tee -a /etc/fstab
+fi
 
 ### Resize /tmp to 1GB
-echo "tmpfs /tmp tmpfs rw,nodev,nosuid,size=$tmpfilesize 0 0" | tee -a /etc/fstab
+if [[ -n $tmpfilesize ]]; then
+	echo "tmpfs /tmp tmpfs rw,nodev,nosuid,size=$tmpfilesize 0 0" | tee -a /etc/fstab
+fi
 
 
 ### Install HRNG driver
@@ -94,63 +130,22 @@ systemctl enable rngd.service
 
 
 ## Manage users
-### Create user "username" in wheel group
-useradd --create-home -gid users -groups wheel --shell /bin/bash $username --password="$userpasswd"
+### Create user $username in wheel group
+useradd --create-home --gid users --groups wheel --shell /bin/bash "$username"
+### Change $username password
+change_passwd "$username" "$userpassword"
 
 ### Allow all users from wheel group to execute sudo commands
-EDITOR=nano visudo
-#### and uncomment the wheel group with password
+sed --in-place 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+ALL\)/\1/' /etc/sudoers
 ### Remove the standard user "alarm"
 userdel --remove --force alarm
 ### Change root password
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | passwd root
-  $rootpasswd
-  $rootpasswd
-EOF
-
-
-## Login the user "username"
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | su -l $username
-  $userpasswd
-EOF
-
-# AS "username"
-## Create standard folders in home
-cd ~
-mkdir Documents Downloads Musis Pictures Public Templates Videos
+change_passwd root "$rootpasswd"
+su -l "$username" --command "cd ~ ; mkdir Documents Downloads Musis Pictures Public Templates Videos"
 
 ## Install yaourt
-mkdir -p /tmp/yaourt
-cd /tmp/yaourt
-### Build dependency package-query
-git clone https://aur.archlinux.org/package-query.git package-query
-cd package-query
-makepkg
-## Login root
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | su -l root
-  $rootpasswd
-EOF
-cd /tmp/yaourt/package-query
-pacman -U package-query*.pkg.tar.xz
-# Root logout
-exit
-
-
-cd /tmp/yaourt
-### Finally build yaourt
-git clone https://aur.archlinux.org/yaourt.git yaourt
-cd yaourt
-makepkg
-## Login root
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | su -l root
-  $rootpasswd
-EOF
-cd /tmp/yaourt/yaourt
-pacman -U yaourt*.pkg.tar.xz
-cd ~
-#### remove these temp files created to install
-rm -fr /tmp/yaourt
-
+build_and_install "$username" package-query
+build_and_install "$username" yaourt
 
 
 ## Install graphical interface
@@ -169,7 +164,7 @@ pacman -S --needed --noconfirm gvfs udisks2 thunar-volman
 pacman -S --needed --noconfirm lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings
 systemctl enable lightdm.service
 ### Install network manager
-pacman -S --needed --noconfirm networkmanager networkmanager-dispatcher-ntpd networkmanager-openvpn networkmanager-openconnection networkmanager-pptp nm-connection-editor network-manager-applet
+pacman -S --needed --noconfirm networkmanager networkmanager-dispatcher-ntpd networkmanager-openvpn networkmanager-openconnect networkmanager-pptp nm-connection-editor network-manager-applet
 systemctl enable dhcpcd.service
 systemctl enable NetworkManager.service
 ### Install bluetooth
