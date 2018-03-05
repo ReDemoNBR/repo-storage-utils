@@ -5,14 +5,23 @@
     .file.entry.list-item {
         border-radius: 5px;
     }
-    .file.entry.list-item:hover {
-        background-color: #0F0;
-        color: #000;
+    .file.entry.list-item.selected:hover {
+        background-color: #0A0;
+        font-weight: bold;
         cursor: pointer;
     }
-    .file.entry.list-item.selected {
-        color: #0F0;
+    .file.entry.list-item.selected:hover::before {
+        background: #0F0;
+    }
+    .file.entry.list-item.selected:not(:hover):not(:focus) {
         font-weight: bold;
+        background-color: #F00;
+    }
+    .file.entry.list-item.selected:not(.status-modified):not(status-added) {
+        color: #222;
+    }
+    .file.entry.list-item.status-modified.selected:hover {
+        color: #A30;
     }
     .file.entry.list-item.status-modified {
         color: #F60;
@@ -27,7 +36,7 @@
         color: #F4F;
     }
     .selected::before {
-        background-color: #4D525D;
+        background-color: #0D0;
     }
     .icon::before {
         font-size: 16px;
@@ -56,6 +65,14 @@
 
 .tree-view::before {
     background-color: #0F0;
+}
+.tree-view:focus {
+    .selected:before {
+        background-color: #0F0;
+    }
+    .list-tree li.list-nested-item.selected > .list-item{
+        color: #111;
+    }
 }
 
 
