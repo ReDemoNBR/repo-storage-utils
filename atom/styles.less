@@ -13,11 +13,7 @@
     .file.entry.list-item.selected:hover::before {
         background: #0F0;
     }
-    .file.entry.list-item.selected:not(:hover):not(:focus) {
-        font-weight: bold;
-        background-color: #F00;
-    }
-    .file.entry.list-item.selected:not(.status-modified):not(status-added) {
+    .file.entry.list-item.selected:not(.status-modified):not(.status-added) {
         color: #222;
     }
     .file.entry.list-item.status-modified.selected:hover {
@@ -60,6 +56,9 @@
     .project-root-header::before {
         line-height: 30px !important;
     }
+    .list-tree li.list-nested-item.selected > .list-item {
+        color: #444;
+    }
 }
 
 
@@ -70,7 +69,10 @@
     .selected:before {
         background-color: #0F0;
     }
-    .list-tree li.list-nested-item.selected > .list-item{
+    .selected.list-nested-item > .list-item > .name, .selected.list-nested-item > .header:before, .selected.list-item > .name {
+        color: #111;
+    }
+    .list-tree li.list-nested-item.selected > .list-item {
         color: #111;
     }
 }
