@@ -13,26 +13,31 @@
     .file.entry.list-item.selected:hover::before {
         background: #0F0;
     }
+    .file.entry.list-item.selected::before {
+        background: #0D0;
+    }
     .file.entry.list-item.selected:not(.status-modified):not(.status-added) {
         color: #222;
     }
     .file.entry.list-item.status-modified.selected:hover {
         color: #A30;
     }
-    .file.entry.list-item.status-modified {
+    .file.entry.list-item.status-modified, .directory.entry.list-nested-item.status-modified > .header.list-item {
         color: #F60;
     }
-    .directory.entry.list-nested-item.status-modified > .header.list-item {
-        color: #F60;
-    }
-    .file.entry.list-item.status-added {
+    .file.entry.list-item.status-added, .directory.entry.list-nested-item.status-added > .header.list-item {
         color: #F4F;
     }
-    .directory.entry.list-nested-item.status-added > .header.list-item {
-        color: #F4F;
-    }
-    .selected::before {
+    /*.selected::before {
         background-color: #0D0;
+    }*/
+    li.directory.entry.list-nested-item.project-root.selected > div {
+        background: #0D0;
+        background-color: #0D0;
+    }
+
+    li.directory.entry.list-nested-item.selected::before {
+        background: #0D0;
     }
     .icon::before {
         font-size: 16px;
@@ -57,6 +62,7 @@
         line-height: 30px !important;
     }
     .list-tree li.list-nested-item.selected > .list-item {
+        background: #0D0;
         color: #444;
     }
 }
@@ -66,8 +72,9 @@
     background-color: #0F0;
 }
 .tree-view:focus {
-    .selected:before {
-        background-color: #0F0;
+    div.header.list-item.project-root-header {
+        background: inherit;
+        background-color: inherit;
     }
     .selected.list-nested-item > .list-item > .name, .selected.list-nested-item > .header:before, .selected.list-item > .name {
         color: #111;
